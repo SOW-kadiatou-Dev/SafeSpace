@@ -17,6 +17,8 @@ COPY . .
 RUN touch /app/database.sqlite /app/SafeSpace.sqlite \
     && chmod 666 /app/database.sqlite /app/SafeSpace.sqlite
 
+RUN php public/setup.php
+
 EXPOSE 8000
 
 # Serve public/ as document root via PHP built-in server
