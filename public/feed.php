@@ -2,14 +2,50 @@
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/_top.php';
 
-$stmt = $pdo->query(
-    "SELECT p.id, p.pseudo, p.content, p.mood, p.created_at,
-            (SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.status='published') AS comment_count
-     FROM posts p
-     WHERE p.status='published'
-     ORDER BY p.created_at DESC"
-);
-$posts = $stmt->fetchAll();
+$postColumns = $pdo->query('PRAGMA table_info(posts)')->fetchAll();
+$postColumnNames = [];
+foreach ($postColumns as $column) {
+    $name = (string)($column['name'] ?? '');
+    if ($name !== '') {
+        $postColumnNames[$name] = true;
+    }
+}
+
+$hasCommentsTable = false;
+$hasCommentStatus = false;
+$commentsTableCheck = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='comments'")->fetchColumn();
+if ($commentsTableCheck) {
+    $hasCommentsTable = true;
+    $commentColumns = $pdo->query('PRAGMA table_info(comments)')->fetchAll();
+    foreach ($commentColumns as $column) {
+        if ((string)($column['name'] ?? '') === 'status') {
+            $hasCommentStatus = true;
+            break;
+        }
+    }
+}
+
+$pseudoExpr = isset($postColumnNames['pseudo']) ? 'p.pseudo' : "'Anonyme'";
+$contentExpr = isset($postColumnNames['content']) ? 'p.content' : "''";
+$moodExpr = isset($postColumnNames['mood']) ? 'p.mood' : 'NULL';
+$createdExpr = isset($postColumnNames['created_at']) ? 'p.created_at' : 'CURRENT_TIMESTAMP';
+$statusFilter = isset($postColumnNames['status']) ? "WHERE p.status='published'" : '';
+$orderBy = isset($postColumnNames['created_at']) ? 'ORDER BY p.created_at DESC' : 'ORDER BY p.id DESC';
+
+$commentCountExpr = '0';
+if ($hasCommentsTable) {
+    $commentCountExpr = $hasCommentStatus
+        ? "(SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.status='published')"
+        : '(SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id)';
+}
+
+$sql = "SELECT p.id, {$pseudoExpr} AS pseudo, {$contentExpr} AS content, {$moodExpr} AS mood, {$createdExpr} AS created_at, {$commentCountExpr} AS comment_count
+        FROM posts p
+        {$statusFilter}
+        {$orderBy}";
+
+$stmt = $pdo->query($sql);
+$posts = $stmt ? $stmt->fetchAll() : [];
 ?>
 <section class="hero page-hero">
   <h1>Supportive Community</h1>

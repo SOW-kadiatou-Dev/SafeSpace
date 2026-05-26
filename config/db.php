@@ -9,6 +9,35 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     $pdo->exec('PRAGMA foreign_keys = ON');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      pseudo TEXT NOT NULL,
+      content TEXT NOT NULL,
+      mood TEXT NULL,
+      status TEXT NOT NULL DEFAULT "published" CHECK (status IN ("published", "blocked")),
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )');
+    $postColumns = $pdo->query('PRAGMA table_info(posts)')->fetchAll();
+    $postColumnNames = [];
+    foreach ($postColumns as $column) {
+        $name = (string)($column['name'] ?? '');
+        if ($name !== '') {
+            $postColumnNames[$name] = true;
+        }
+    }
+    if (!isset($postColumnNames['pseudo'])) {
+        $pdo->exec('ALTER TABLE posts ADD COLUMN pseudo TEXT NOT NULL DEFAULT "Anonyme-0000"');
+    }
+    if (!isset($postColumnNames['content'])) {
+        $pdo->exec('ALTER TABLE posts ADD COLUMN content TEXT NOT NULL DEFAULT ""');
+    }
+    if (!isset($postColumnNames['mood'])) {
+        $pdo->exec('ALTER TABLE posts ADD COLUMN mood TEXT NULL');
+    }
+    if (!isset($postColumnNames['created_at'])) {
+        $pdo->exec('ALTER TABLE posts ADD COLUMN created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP');
+    }
+
     $columns = $pdo->query('PRAGMA table_info(users)')->fetchAll();
     $hasPremiumExpiry = false;
     foreach ($columns as $column) {
