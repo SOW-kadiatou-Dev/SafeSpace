@@ -13,14 +13,18 @@ foreach ($postColumns as $column) {
 
 $hasCommentsTable = false;
 $hasCommentStatus = false;
+$hasCommentPostId = false;
 $commentsTableCheck = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='comments'")->fetchColumn();
 if ($commentsTableCheck) {
     $hasCommentsTable = true;
     $commentColumns = $pdo->query('PRAGMA table_info(comments)')->fetchAll();
     foreach ($commentColumns as $column) {
-        if ((string)($column['name'] ?? '') === 'status') {
+        $commentColumnName = (string)($column['name'] ?? '');
+        if ($commentColumnName === 'status') {
             $hasCommentStatus = true;
-            break;
+        }
+        if ($commentColumnName === 'post_id') {
+            $hasCommentPostId = true;
         }
     }
 }
@@ -33,7 +37,7 @@ $statusFilter = isset($postColumnNames['status']) ? "WHERE p.status='published'"
 $orderBy = isset($postColumnNames['created_at']) ? 'ORDER BY p.created_at DESC' : 'ORDER BY p.id DESC';
 
 $commentCountExpr = '0';
-if ($hasCommentsTable) {
+if ($hasCommentsTable && $hasCommentPostId) {
     $commentCountExpr = $hasCommentStatus
         ? "(SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id AND c.status='published')"
         : '(SELECT COUNT(*) FROM comments c WHERE c.post_id = p.id)';
