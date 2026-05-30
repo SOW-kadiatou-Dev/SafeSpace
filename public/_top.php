@@ -35,23 +35,27 @@ function isActive(string $file, string $current): string {
   <header class="site-header">
     <div class="container nav-wrap">
       <nav class="nav" aria-label="Navigation principale">
-        <a class="<?= isActive('index.php', $current) ?>" href="index.php">Accueil</a>
-        <a class="<?= isActive('feed.php', $current) ?>" href="feed.php">Communaute</a>
-        <a class="<?= isActive('share.php', $current) ?>" href="share.php">Partager</a>
-        <a class="<?= isActive('inspiration.php', $current) ?>" href="inspiration.php">Inspiration</a>
         <?php if ($user && isAdmin($user)): ?>
-          <a class="<?= isActive('admin.php', $current) ?>" href="admin.php">Mon espace admin</a>
-          <a class="<?= isActive('creator.php', $current) ?>" href="creator.php">Creator Studio</a>
-          <a class="<?= isActive('creator_earnings.php', $current) ?>" href="creator_earnings.php">Creator Earnings</a>
-          <a class="<?= isActive('admin_settings.php', $current) ?>" href="admin_settings.php">Admin Settings</a>
-        <?php endif; ?>
-        <?php if ($user): ?>
+          <a class="<?= isActive('index.php', $current) ?>" href="index.php">Accueil</a>
+          <?php if ($current === 'admin.php' && isset($_GET['view']) && $_GET['view'] === 'users'): ?>
+            <a class="nav-btn-admin" href="admin.php">Créer publication</a>
+          <?php else: ?>
+            <a class="nav-btn-admin" href="admin.php?view=users">Liste des utilisateurs</a>
+          <?php endif; ?>
           <a class="<?= isActive('logout.php', $current) ?>" href="logout.php">Deconnexion</a>
         <?php else: ?>
-          <a class="<?= isActive('login.php', $current) ?>" href="login.php">Connexion</a>
-          <a class="<?= isActive('register.php', $current) ?>" href="register.php">Inscription</a>
+          <a class="<?= isActive('index.php', $current) ?>" href="index.php">Accueil</a>
+          <a class="<?= isActive('feed.php', $current) ?>" href="feed.php">Communaute</a>
+          <a class="<?= isActive('share.php', $current) ?>" href="share.php">Partager</a>
+          <a class="<?= isActive('inspiration.php', $current) ?>" href="inspiration.php">Inspiration</a>
+          <?php if ($user): ?>
+            <a class="<?= isActive('logout.php', $current) ?>" href="logout.php">Deconnexion</a>
+          <?php else: ?>
+            <a class="<?= isActive('login.php', $current) ?>" href="login.php">Connexion</a>
+            <a class="<?= isActive('register.php', $current) ?>" href="register.php">Inscription</a>
+          <?php endif; ?>
+          <a class="nav-premium <?= isActive('pricing.php', $current) ?>" href="pricing.php">PREMIUM</a>
         <?php endif; ?>
-        <a class="nav-premium <?= isActive('pricing.php', $current) ?>" href="pricing.php">PREMIUM</a>
       </nav>
     </div>
   </header>

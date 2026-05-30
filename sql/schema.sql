@@ -7,17 +7,16 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(190) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
-  is_admin TINYINT(1) NOT NULL DEFAULT 0,
   is_premium TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS posts (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
+  pseudo VARCHAR(80) NOT NULL,
   content TEXT NOT NULL,
-  media_path VARCHAR(255) NULL,
-  media_type VARCHAR(50) NULL,
+  mood VARCHAR(50) NULL,
+  status ENUM('published', 'blocked') NOT NULL DEFAULT 'published',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -56,9 +55,6 @@ CREATE TABLE IF NOT EXISTS private_messages (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_conversation_key (conversation_key)
 );
-
-INSERT INTO users (name, email, password_hash, role, is_admin, is_premium) 
-VALUES ('Admin Test', 'admin@safespace.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWGKye', 'admin', 1, 1);
 
 INSERT INTO inspirations (quote, author, category)
 SELECT * FROM (

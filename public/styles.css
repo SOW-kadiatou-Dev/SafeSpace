@@ -1223,3 +1223,27 @@ input:focus, textarea:focus, select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+.nav-btn-admin {
+  margin-left: auto;
+  margin-right: 32px;
+  border-radius: 11px;
+  padding: 4px 16px !important;
+  border: 0.8px solid rgba(255, 126, 179, 0.6) !important;
+  background: rgba(255, 62, 127, 0.15);
+  color: var(--lux-rose) !important;
+  letter-spacing: 1.5px !important;
+  font-family: Arial, sans-serif;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.nav-btn-admin:hover {
+  background: rgba(255, 62, 127, 0.28);
+  box-shadow: 0 0 14px rgba(255, 62, 127, 0.28);
+  color: #fff !important;
+}
