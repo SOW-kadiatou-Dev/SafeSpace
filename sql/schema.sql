@@ -7,16 +7,17 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(190) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+  is_admin TINYINT(1) NOT NULL DEFAULT 0,
   is_premium TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS posts (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  pseudo VARCHAR(80) NOT NULL,
+  title VARCHAR(255) NOT NULL,
   content TEXT NOT NULL,
-  mood VARCHAR(50) NULL,
-  status ENUM('published', 'blocked') NOT NULL DEFAULT 'published',
+  media_path VARCHAR(255) NULL,
+  media_type VARCHAR(50) NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -63,3 +64,7 @@ SELECT * FROM (
   SELECT 'Demander de l\'aide est un acte de courage.', 'SafeSpace', 'support'
 ) AS seed
 WHERE NOT EXISTS (SELECT 1 FROM inspirations);
+
+INSERT INTO users (name, email, password_hash, role, is_admin, is_premium) 
+VALUES ('Admin Test', 'admin@safespace.com', '$2y$10$abcdefghijklmnopqrstuv', 'admin', 1, 0)
+ON DUPLICATE KEY UPDATE is_admin = 1;
