@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/_top.php';
+require_once __DIR__ . '/../config/helpers.php';
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -33,6 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+require_once __DIR__ . '/_top.php';
 ?>
 <section class="card auth-panel">
   <h1>Inscription</h1>
