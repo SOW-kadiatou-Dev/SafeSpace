@@ -57,6 +57,9 @@ CREATE TABLE IF NOT EXISTS private_messages (
   INDEX idx_conversation_key (conversation_key)
 );
 
+INSERT INTO users (name, email, password_hash, role, is_admin, is_premium) 
+VALUES ('Admin Test', 'admin@safespace.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWGKye', 'admin', 1, 1);
+
 INSERT INTO inspirations (quote, author, category)
 SELECT * FROM (
   SELECT 'Respire. Tu n\'as pas besoin d\'être parfait(e) pour avancer.', 'SafeSpace', 'self-kindness' UNION ALL
@@ -64,7 +67,3 @@ SELECT * FROM (
   SELECT 'Demander de l\'aide est un acte de courage.', 'SafeSpace', 'support'
 ) AS seed
 WHERE NOT EXISTS (SELECT 1 FROM inspirations);
-
-INSERT INTO users (name, email, password_hash, role, is_admin, is_premium) 
-VALUES ('Admin Test', 'admin@safespace.com', '$2y$10$abcdefghijklmnopqrstuv', 'admin', 1, 0)
-ON DUPLICATE KEY UPDATE is_admin = 1;
